@@ -36,7 +36,7 @@
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
-
+void BootLoaderInit (uint32_t BootloaderStatus);
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -63,7 +63,7 @@ void SystemClock_Config(void);
 
 int main(void)
 {
-
+BootLoaderInit(1);
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -101,6 +101,33 @@ int main(void)
   }
   /* USER CODE END 3 */
 
+}
+void BootLoaderInit (uint32_t BootloaderStatus)
+	{
+		void (*SysMemBootJump)(void);
+SysMemBootJump = (void (*)(void)) (*((uint32_t *) 0x1FFFF004));
+		
+		
+	if(BootloaderStatus==1)
+	{
+		
+		HAL_RCC_DeInit();
+    SysTick->CTRL = 0;
+    SysTick->LOAD = 0;
+   SysTick->VAL = 0;
+	
+	__set_PRIMASK(1);
+		
+		
+		
+		__set_MSP(*(uint32_t *)0x20001000);
+		//__set_MSP(*(uint32_t *)0x1FFFF000);
+	
+		SysMemBootJump();
+		
+	while(1);
+	}
+	
 }
 
 /** System Clock Configuration
